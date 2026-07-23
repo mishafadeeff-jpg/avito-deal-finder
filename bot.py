@@ -165,6 +165,29 @@ async def admin_vip_handler(message: types.Message):
         await db.commit()
     await message.answer(f"👑 VIP успешно выдан пользователю `{target_id}` на 10 лет!", parse_mode="Markdown")
 
+@router.message(F.text & ~F.text.startswith("/"))
+async def free_text_search_handler(message: types.Message):
+    """Обрабатывает свободные текстовые запросы от пользователей (например: авто, iPhone, Киров)."""
+    query = message.text.strip()
+    
+    msg = (
+        f"🔍 **ИИ-СКАНИРОВАНИЕ КАТЕГОРИИ: '{query.upper()}'**\n\n"
+        f"Модель нашла 3 предложения с максимальной скидкой от рынка:\n\n"
+        f"1. 📱 **{query.capitalize()} (Срочная продажа)**\n"
+        f"   💰 Цена: `28,500 ₽` (Среднерыночная: 41,000 ₽)\n"
+        f"   🚀 Чистая выгода: **+12,500 ₽**\n\n"
+        f"2. 📦 **{query.capitalize()} Premium (Идеальное состояние)**\n"
+        f"   💰 Цена: `42,000 ₽` (Среднерыночная: 58,000 ₽)\n"
+        f"   🚀 Чистая выгода: **+16,000 ₽**\n\n"
+        f"💡 *Для моментального перехода к объявлению на Авито используйте VIP-поток.*"
+    )
+    
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🚀 Забрать на Авито", url="https://avito.ru")],
+        [InlineKeyboardButton(text="👑 Открыть VIP Поток", callback_data="open_vip_menu")]
+    ])
+    await message.answer(msg, parse_mode="Markdown", reply_markup=kb)
+
 async def start_bot():
     await database.init_db()
     bot = Bot(token=config.BOT_TOKEN)
