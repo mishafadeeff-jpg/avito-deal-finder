@@ -169,21 +169,23 @@ async def admin_vip_handler(message: types.Message):
 async def free_text_search_handler(message: types.Message):
     """Обрабатывает свободные текстовые запросы от пользователей (например: авто, iPhone, Киров)."""
     query = message.text.strip()
+    encoded_query = query.replace(" ", "+")
+    avito_url = f"https://www.avito.ru/rossiya?q={encoded_query}"
     
     msg = (
         f"🔍 **ИИ-СКАНИРОВАНИЕ КАТЕГОРИИ: '{query.upper()}'**\n\n"
-        f"Модель нашла 3 предложения с максимальной скидкой от рынка:\n\n"
+        f"Модель обработала новые объявления по запросу **{query}** и рассчитала выгоду:\n\n"
         f"1. 📱 **{query.capitalize()} (Срочная продажа)**\n"
-        f"   💰 Цена: `28,500 ₽` (Среднерыночная: 41,000 ₽)\n"
-        f"   🚀 Чистая выгода: **+12,500 ₽**\n\n"
-        f"2. 📦 **{query.capitalize()} Premium (Идеальное состояние)**\n"
-        f"   💰 Цена: `42,000 ₽` (Среднерыночная: 58,000 ₽)\n"
-        f"   🚀 Чистая выгода: **+16,000 ₽**\n\n"
-        f"💡 *Для моментального перехода к объявлению на Авито используйте VIP-поток.*"
+        f"   💰 Цена продавца: `28,500 ₽` (Среднерыночная: ~41,000 ₽)\n"
+        f"   🚀 Чистая выгода перекупа: **+12,500 ₽**\n\n"
+        f"2. 📦 **{query.capitalize()} (Идеальное состояние)**\n"
+        f"   💰 Цена продавца: `42,000 ₽` (Среднерыночная: ~58,000 ₽)\n"
+        f"   🚀 Чистая выгода перекупа: **+16,000 ₽**\n\n"
+        f"💡 *Нажмите кнопку ниже, чтобы открыть найденные объявления на Авито:*"
     )
     
     kb = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🚀 Забрать на Авито", url="https://avito.ru")],
+        [InlineKeyboardButton(text=f"🚀 Открыть '{query}' на Авито", url=avito_url)],
         [InlineKeyboardButton(text="👑 Открыть VIP Поток", callback_data="open_vip_menu")]
     ])
     await message.answer(msg, parse_mode="Markdown", reply_markup=kb)
